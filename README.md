@@ -3,7 +3,7 @@
 ---
 
 ### move_test
-    - Test O_block basic move, including left, right , up and down.
+    - Test O_block basic move, including left, right, up and down.
 
 ### tetris_v1
     - Initial an S block. Player can move left, right or down.  
