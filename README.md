@@ -11,5 +11,6 @@
     - Add check and delete lines.
 
 ### tetris_v2
+    - Add block passing through the wall.
     - Add block rotation.
     - LUTs over-utilized (23729/20800).
