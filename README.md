@@ -9,10 +9,7 @@
     - Initial an S block. Player can move left, right or down.  
     - Add block collider.
     - Add check and delete lines.
-<<<<<<< HEAD
 
 ### tetris_v2
     - Add block rotation.
     - LUTs over-utilized (23729/20800).
-=======
->>>>>>> c8d07afe551431544a931b78b01b4b4fa57a2ad0
