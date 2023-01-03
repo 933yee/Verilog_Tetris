@@ -352,16 +352,16 @@ module game(
                                         next_ctrlX[3] <= (ctrlX[2]+1)%`WIDTH;
                                         next_ctrlY[3] <= ctrlY[2]+1;
                                         
-                                        a1 <= (ctrlY[2]-1)*`WIDTH+ctrlX[2];
-                                        a2 <= (ctrlY[2]+1)*`WIDTH+ctrlX[2];
-                                        a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
-                                        a4 <= (ctrlY[2]+1)*`WIDTH+(ctrlX[2]+1)%`WIDTH;
-                                        // delete origin position in memory
+                                        // // delete origin position in memory
                                         // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
                                         // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
 
+                                        a1 <= (ctrlY[2]-1)*`WIDTH+ctrlX[2];
+                                        a2 <= (ctrlY[2]+1)*`WIDTH+ctrlX[2];
+                                        a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        a4 <= (ctrlY[2]+1)*`WIDTH+(ctrlX[2]+1)%`WIDTH;
                                         // // add new position to memory
                                         // boardMemory[(ctrlY[2]-1)*`WIDTH+ctrlX[2]] <= 1; 
                                         // boardMemory[(ctrlY[2]+1)*`WIDTH+ctrlX[2]] <= 1; 
@@ -380,17 +380,20 @@ module game(
                                         next_ctrlX[3] <= (ctrlX[1]-1+`WIDTH)%`WIDTH;
                                         next_ctrlY[3] <= ctrlY[1]+1;
                                         
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // //boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
-                                        boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]+1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[1]+1)*`WIDTH+(ctrlX[1]-1+`WIDTH)%`WIDTH] <= 1; 
+                                        a1 <= ctrlY[1]*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
+                                        a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        a3 <= ctrlY[1]*`WIDTH+(ctrlX[1]+1)%`WIDTH;
+                                        a4 <= (ctrlY[1]+1)*`WIDTH+(ctrlX[1]-1+`WIDTH)%`WIDTH;
+                                        // // add new position to memory
+                                        //boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        //boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]+1)%`WIDTH] <= 1; 
+                                        //boardMemory[(ctrlY[1]+1)*`WIDTH+(ctrlX[1]-1+`WIDTH)%`WIDTH] <= 1; 
                                         
                                         // counterwise
                                         next_angle <= `ANGLE180;
@@ -406,16 +409,20 @@ module game(
                                         next_ctrlX[3] <= ctrlX[1];
                                         next_ctrlY[3] <= ctrlY[1]+1;
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[1]-1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[1]-1)*`WIDTH+ctrlX[1]] <= 1; 
-                                        boardMemory[(ctrlY[1]+1)*`WIDTH+ctrlX[1]] <= 1; 
+                                        // // delete origin position in memory
+                                        //boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        //boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        //boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= (ctrlY[1]-1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
+                                        a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        a3 <= (ctrlY[1]-1)*`WIDTH+ctrlX[1];
+                                        a4 <= (ctrlY[1]+1)*`WIDTH+ctrlX[1];
+                                        // // add new position to memory
+                                        //boardMemory[(ctrlY[1]-1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        //boardMemory[(ctrlY[1]-1)*`WIDTH+ctrlX[1]] <= 1; 
+                                        //boardMemory[(ctrlY[1]+1)*`WIDTH+ctrlX[1]] <= 1; 
 
                                         // counterclockwise
                                         next_angle <= `ANGLE270;
@@ -431,16 +438,20 @@ module game(
                                         next_ctrlX[3] <= (ctrlX[2]+1)%`WIDTH;
                                         next_ctrlY[3] <= ctrlY[2];
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
-                                        boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]-1+`WIDTH)%`WIDTH] <= 1; 
-                                        boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= (ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH;
+                                        a2 <= ctrlY[2]*`WIDTH+(ctrlX[2]-1+`WIDTH)%`WIDTH;
+                                        a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        a4 <= ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH;
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
+                                        // boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]-1+`WIDTH)%`WIDTH] <= 1; 
+                                        // boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
                                         next_angle <= `ANGLE0;
                                     end
                                 endcase
@@ -458,16 +469,20 @@ module game(
                                         next_ctrlX[3] <= ctrlX[2];
                                         next_ctrlY[3] <= ctrlY[2]+1;
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[2]-1)*`WIDTH+ctrlX[2]] <= 1; 
-                                        boardMemory[(ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[2]+1)*`WIDTH+ctrlX[2]] <= 1; 
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= (ctrlY[2]-1)*`WIDTH+ctrlX[2];
+                                        a2 <= (ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH;
+                                        a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        a4 <= (ctrlY[2]+1)*`WIDTH+ctrlX[2];
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[2]-1)*`WIDTH+ctrlX[2]] <= 1; 
+                                        // boardMemory[(ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
+                                        // boardMemory[(ctrlY[2]+1)*`WIDTH+ctrlX[2]] <= 1; 
                                                      
                                         next_angle <= `ANGLE90;
                                     end
@@ -482,16 +497,20 @@ module game(
                                         next_ctrlX[3] <= (ctrlX[2]+1)%`WIDTH;
                                         next_ctrlY[3] <= ctrlY[2]+1;
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]-1+`WIDTH)%`WIDTH] <= 1; 
-                                        boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[2]+1)*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= ctrlY[2]*`WIDTH+(ctrlX[2]-1+`WIDTH)%`WIDTH;
+                                        a2 <= ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH;
+                                        a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        a4 <= (ctrlY[2]+1)*`WIDTH+(ctrlX[2]+1)%`WIDTH;
+                                        // // add new position to memory
+                                        // boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]-1+`WIDTH)%`WIDTH] <= 1; 
+                                        // boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
+                                        // boardMemory[(ctrlY[2]+1)*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
                                         
                                         // counterwise
                                         next_angle <= `ANGLE180;
@@ -507,16 +526,20 @@ module game(
                                         next_ctrlX[3] <= ctrlX[1];
                                         next_ctrlY[3] <= ctrlY[1]+1;
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[1]-1)*`WIDTH+ctrlX[1]] <= 1; 
-                                        boardMemory[(ctrlY[1]+1)*`WIDTH+ctrlX[1]] <= 1; 
-                                        boardMemory[(ctrlY[1]+1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= (ctrlY[1]-1)*`WIDTH+ctrlX[1];
+                                        a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        a3 <= (ctrlY[1]+1)*`WIDTH+ctrlX[1];
+                                        a4 <= (ctrlY[1]+1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[1]-1)*`WIDTH+ctrlX[1]] <= 1; 
+                                        // boardMemory[(ctrlY[1]+1)*`WIDTH+ctrlX[1]] <= 1; 
+                                        // boardMemory[(ctrlY[1]+1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
 
                                         // counterclockwise
                                         next_angle <= `ANGLE270;
@@ -532,16 +555,20 @@ module game(
                                         next_ctrlX[3] <= (ctrlX[1]+1)%`WIDTH;
                                         next_ctrlY[3] <= ctrlY[1];
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[1]-1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
-                                        boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
-                                        boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]+1)%`WIDTH] <= 1; 
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= (ctrlY[1]-1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
+                                        a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        a3 <= ctrlY[1]*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
+                                        a4 <= ctrlY[1]*`WIDTH+(ctrlX[1]+1)%`WIDTH;
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[1]-1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        // boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        // boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]+1)%`WIDTH] <= 1; 
                                         next_angle <= `ANGLE0;
                                     end
                                 endcase
@@ -559,15 +586,19 @@ module game(
                                         next_ctrlX[3] <= (ctrlX[3]+1)%`WIDTH;
                                         next_ctrlY[3] <= ctrlY[3]+1;
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[ctrlY[3]*`WIDTH+(ctrlX[3]+1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[3]+1)*`WIDTH+(ctrlX[3]+1)%`WIDTH] <= 1; 
+                                        // // delete origin position in memory
+                                        // //boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        a2 <= ctrlY[3]*`WIDTH+(ctrlX[3]+1)%`WIDTH;
+                                        a3 <= (ctrlY[3]+1)*`WIDTH+(ctrlX[3]+1)%`WIDTH;
+                                        a4 <= ctrlY[3]*`WIDTH+ctrlX[3];
+                                        // // add new position to memory
+                                        // boardMemory[ctrlY[3]*`WIDTH+(ctrlX[3]+1)%`WIDTH] <= 1; 
+                                        // boardMemory[(ctrlY[3]+1)*`WIDTH+(ctrlX[3]+1)%`WIDTH] <= 1; 
                                         
                                         next_angle <= `ANGLE90;
                                     end
@@ -582,15 +613,19 @@ module game(
                                         next_ctrlX[3] <= ctrlX[1];
                                         next_ctrlY[3] <= ctrlY[1]+1;
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[1]+1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[1]+1)*`WIDTH+ctrlX[1]] <= 1; 
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= (ctrlY[1]+1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
+                                        a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        a4 <= (ctrlY[1]+1)*`WIDTH+ctrlX[1];
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[1]+1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        // boardMemory[(ctrlY[1]+1)*`WIDTH+ctrlX[1]] <= 1; 
                                         
                                         // counterwise
                                         next_angle <= `ANGLE180;
@@ -606,15 +641,19 @@ module game(
                                         next_ctrlX[3] <= ctrlX[3];
                                         next_ctrlY[3] <= ctrlY[3];
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[0]-1)*`WIDTH+(ctrlX[0]+`WIDTH-1)%`WIDTH] <= 1; 
-                                        boardMemory[ctrlY[0]*`WIDTH+(ctrlX[0]+`WIDTH-1)%`WIDTH] <= 1;
+                                        // // delete origin position in memory
+                                        // // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        a2 <= (ctrlY[0]-1)*`WIDTH+(ctrlX[0]+`WIDTH-1)%`WIDTH;
+                                        a3 <= ctrlY[0]*`WIDTH+(ctrlX[0]+`WIDTH-1)%`WIDTH;
+                                        a4 <= ctrlY[3]*`WIDTH+ctrlX[3];
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[0]-1)*`WIDTH+(ctrlX[0]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        // boardMemory[ctrlY[0]*`WIDTH+(ctrlX[0]+`WIDTH-1)%`WIDTH] <= 1;
 
                                         // counterclockwise
                                         next_angle <= `ANGLE270;
@@ -630,15 +669,19 @@ module game(
                                         next_ctrlX[3] <= ctrlX[2];
                                         next_ctrlY[3] <= ctrlY[2];
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[2]-1)*`WIDTH+ctrlX[2]] <= 1; 
-                                        boardMemory[(ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1;
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= (ctrlY[2]-1)*`WIDTH+ctrlX[2];
+                                        a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        a4 <= (ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH;
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[2]-1)*`WIDTH+ctrlX[2]] <= 1; 
+                                        // boardMemory[(ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1;
                                         next_angle <= `ANGLE0;
                                     end
                                 endcase
@@ -656,16 +699,20 @@ module game(
                                         next_ctrlX[3] <= ctrlX[2];
                                         next_ctrlY[3] <= ctrlY[2]+1;
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
-                                        boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[2]+1)*`WIDTH+ctrlX[2]] <= 1; 
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= (ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH;
+                                        a2 <= (ctrlY[2]+1)*`WIDTH+ctrlX[2];
+                                        a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        a4 <= ctrlY[3]*`WIDTH+ctrlX[3];
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
+                                        // //boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
+                                        // boardMemory[(ctrlY[2]+1)*`WIDTH+ctrlX[2]] <= 1; 
                                         
                                         next_angle <= `ANGLE90;
                                     end
@@ -680,16 +727,20 @@ module game(
                                         next_ctrlX[3] <= (ctrlX[1]+1)%`WIDTH;
                                         next_ctrlY[3] <= ctrlY[1]+1;
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[1]+1)*`WIDTH+ctrlX[1]] <= 1; 
-                                        boardMemory[(ctrlY[1]+1)*`WIDTH+(ctrlX[1]+1)%`WIDTH] <= 1; 
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= ctrlY[1]*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
+                                        a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        a3 <= (ctrlY[1]+1)*`WIDTH+(ctrlX[1]+1)%`WIDTH;
+                                        a4 <= ctrlY[3]*`WIDTH+ctrlX[3];
+                                        // // add new position to memory
+                                        // boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        // //boardMemory[(ctrlY[1]+1)*`WIDTH+ctrlX[1]] <= 1; 
+                                        // boardMemory[(ctrlY[1]+1)*`WIDTH+(ctrlX[1]+1)%`WIDTH] <= 1; 
                                         
                                         // counterwise
                                         next_angle <= `ANGLE180;
@@ -705,16 +756,20 @@ module game(
                                         next_ctrlX[3] <= (ctrlX[1]+`WIDTH-1)%`WIDTH;
                                         next_ctrlY[3] <= ctrlY[1]+1;
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[1]-1)*`WIDTH+ctrlX[1]] <= 1; 
-                                        boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[1]+1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        // // delete origin position in memory
+                                        // //boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // //boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        a3 <= (ctrlY[1]-1)*`WIDTH+ctrlX[1];
+                                        a4 <= (ctrlY[1]+1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[1]-1)*`WIDTH+ctrlX[1]] <= 1; 
+                                        // //boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        // boardMemory[(ctrlY[1]+1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
 
                                         // counterclockwise
                                         next_angle <= `ANGLE270;
@@ -730,16 +785,20 @@ module game(
                                         next_ctrlX[3] <= (ctrlX[2]+1)%`WIDTH;
                                         next_ctrlY[3] <= ctrlY[2];
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[2]-1)*`WIDTH+(ctrlX[2]+`WIDTH-1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[2]-1)*`WIDTH+ctrlX[2]] <= 1; 
-                                        boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= (ctrlY[2]-1)*`WIDTH+(ctrlX[2]+`WIDTH-1)%`WIDTH;
+                                        a2 <= (ctrlY[2]-1)*`WIDTH+ctrlX[2];
+                                        a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        a4 <= ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH;
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[2]-1)*`WIDTH+(ctrlX[2]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        // boardMemory[(ctrlY[2]-1)*`WIDTH+ctrlX[2]] <= 1; 
+                                        // boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
                                         next_angle <= `ANGLE0;
                                     end
                                 endcase
@@ -757,16 +816,20 @@ module game(
                                         next_ctrlX[3] <= ctrlX[2];
                                         next_ctrlY[3] <= ctrlY[2]+2;
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[2]-1)*`WIDTH+ctrlX[2]] <= 1; 
-                                        boardMemory[(ctrlY[2]+1)*`WIDTH+ctrlX[2]] <= 1; 
-                                        boardMemory[(ctrlY[2]+2)*`WIDTH+ctrlX[2]] <= 1; 
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= (ctrlY[2]-1)*`WIDTH+ctrlX[2];
+                                        a2 <= (ctrlY[2]+1)*`WIDTH+ctrlX[2];
+                                        a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        a4 <= (ctrlY[2]+2)*`WIDTH+ctrlX[2];
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[2]-1)*`WIDTH+ctrlX[2]] <= 1; 
+                                        // boardMemory[(ctrlY[2]+1)*`WIDTH+ctrlX[2]] <= 1; 
+                                        // boardMemory[(ctrlY[2]+2)*`WIDTH+ctrlX[2]] <= 1; 
                                         
                                         next_angle <= `ANGLE90;
                                     end
@@ -781,16 +844,20 @@ module game(
                                         next_ctrlX[3] <= (ctrlX[2]+1)%`WIDTH;
                                         next_ctrlY[3] <= ctrlY[2];
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[2])*`WIDTH+(ctrlX[2]+`WIDTH-2)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[2])*`WIDTH+(ctrlX[2]+`WIDTH-1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[2])*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= (ctrlY[2])*`WIDTH+(ctrlX[2]+`WIDTH-2)%`WIDTH;
+                                        a2 <= (ctrlY[2])*`WIDTH+(ctrlX[2]+`WIDTH-1)%`WIDTH;
+                                        a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        a4 <= (ctrlY[2])*`WIDTH+(ctrlX[2]+1)%`WIDTH;
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[2])*`WIDTH+(ctrlX[2]+`WIDTH-2)%`WIDTH] <= 1; 
+                                        // boardMemory[(ctrlY[2])*`WIDTH+(ctrlX[2]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        // boardMemory[(ctrlY[2])*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
                                         
                                         // counterwise
                                         next_angle <= `ANGLE180;
@@ -806,16 +873,20 @@ module game(
                                         next_ctrlX[3] <= ctrlX[1];
                                         next_ctrlY[3] <= ctrlY[1]+1;
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[1]-2)*`WIDTH+ctrlX[1]] <= 1; 
-                                        boardMemory[(ctrlY[1]-1)*`WIDTH+ctrlX[1]] <= 1; 
-                                        boardMemory[(ctrlY[1]+1)*`WIDTH+ctrlX[1]] <= 1;
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= (ctrlY[1]-2)*`WIDTH+ctrlX[1];
+                                        a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        a3 <= (ctrlY[1]-1)*`WIDTH+ctrlX[1];
+                                        a4 <= (ctrlY[1]+1)*`WIDTH+ctrlX[1];
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[1]-2)*`WIDTH+ctrlX[1]] <= 1; 
+                                        // boardMemory[(ctrlY[1]-1)*`WIDTH+ctrlX[1]] <= 1; 
+                                        // boardMemory[(ctrlY[1]+1)*`WIDTH+ctrlX[1]] <= 1;
 
                                         // counterclockwise
                                         next_angle <= `ANGLE270;
@@ -831,16 +902,20 @@ module game(
                                         next_ctrlX[3] <= (ctrlX[1]+2)%`WIDTH;
                                         next_ctrlY[3] <= ctrlY[1];
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[1])*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[1])*`WIDTH+(ctrlX[1]+1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[1])*`WIDTH+(ctrlX[1]+2)%`WIDTH] <= 1;
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= (ctrlY[1])*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
+                                        a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        a3 <= (ctrlY[1])*`WIDTH+(ctrlX[1]+1)%`WIDTH;
+                                        a4 <= (ctrlY[1])*`WIDTH+(ctrlX[1]+2)%`WIDTH;
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[1])*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        // boardMemory[(ctrlY[1])*`WIDTH+(ctrlX[1]+1)%`WIDTH] <= 1; 
+                                        // boardMemory[(ctrlY[1])*`WIDTH+(ctrlX[1]+2)%`WIDTH] <= 1;
                                         next_angle <= `ANGLE0;
                                     end
                                 endcase
@@ -858,16 +933,20 @@ module game(
                                         next_ctrlX[3] <= ctrlX[2];
                                         next_ctrlY[3] <= ctrlY[2]+1;
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[2]-1)*`WIDTH+ctrlX[2]] <= 1; 
-                                        boardMemory[(ctrlY[2])*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[2]+1)*`WIDTH+ctrlX[2]] <= 1; 
+                                        // // delete origin position in memory
+                                        // // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        a2 <= (ctrlY[2]+1)*`WIDTH+ctrlX[2];
+                                        a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        a4 <= ctrlY[3]*`WIDTH+ctrlX[3];
+                                        // // add new position to memory
+                                        // //boardMemory[(ctrlY[2]-1)*`WIDTH+ctrlX[2]] <= 1; 
+                                        // //boardMemory[(ctrlY[2])*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
+                                        // boardMemory[(ctrlY[2]+1)*`WIDTH+ctrlX[2]] <= 1; 
                                         
                                         next_angle <= `ANGLE90;
                                     end
@@ -882,16 +961,20 @@ module game(
                                         next_ctrlX[3] <= ctrlX[1];
                                         next_ctrlY[3] <= ctrlY[1]+1;
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[1])*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[1])*`WIDTH+(ctrlX[1]+1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[1]+1)*`WIDTH+ctrlX[1]] <= 1; 
+                                        // // delete origin position in memory
+                                        // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= (ctrlY[1])*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
+                                        a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        a4 <= ctrlY[3]*`WIDTH+ctrlX[3];
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[1])*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        // //boardMemory[(ctrlY[1])*`WIDTH+(ctrlX[1]+1)%`WIDTH] <= 1; 
+                                        // //boardMemory[(ctrlY[1]+1)*`WIDTH+ctrlX[1]] <= 1; 
                                         
                                         // counterwise
                                         next_angle <= `ANGLE180;
@@ -907,16 +990,20 @@ module game(
                                         next_ctrlX[3] <= ctrlX[1];
                                         next_ctrlY[3] <= ctrlY[1]+1;
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[1]-1)*`WIDTH+ctrlX[1]] <= 1; 
-                                        boardMemory[(ctrlY[1])*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[1]+1)*`WIDTH+ctrlX[1]] <= 1;
+                                        // // delete origin position in memory
+                                        // //boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // //boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        a3 <= (ctrlY[1]-1)*`WIDTH+ctrlX[1];
+                                        a4 <= ctrlY[3]*`WIDTH+ctrlX[3];
+                                        // // add new position to memory
+                                        // boardMemory[(ctrlY[1]-1)*`WIDTH+ctrlX[1]] <= 1; 
+                                        // //boardMemory[(ctrlY[1])*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        // //boardMemory[(ctrlY[1]+1)*`WIDTH+ctrlX[1]] <= 1;
 
                                         // counterclockwise
                                         next_angle <= `ANGLE270;
@@ -932,16 +1019,20 @@ module game(
                                         next_ctrlX[3] <= (ctrlX[2]+1)%`WIDTH;
                                         next_ctrlY[3] <= ctrlY[2];
 
-                                        // delete origin position in memory
-                                        boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
-                                        boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
-                                        boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
-                                        boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
-                                        // add new position to memory
-                                        boardMemory[(ctrlY[2]-1)*`WIDTH+ctrlX[2]] <= 1; 
-                                        boardMemory[(ctrlY[2])*`WIDTH+(ctrlX[2]+`WIDTH-1)%`WIDTH] <= 1; 
-                                        boardMemory[(ctrlY[2])*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
+                                        // // delete origin position in memory
+                                        // //boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0; 
+                                        // //boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
+                                        // //boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
+                                        // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
+                                        
+                                        a1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        a4 <= (ctrlY[2])*`WIDTH+(ctrlX[2]+1)%`WIDTH;
+                                        // // add new position to memory
+                                        // //boardMemory[(ctrlY[2]-1)*`WIDTH+ctrlX[2]] <= 1; 
+                                        // //boardMemory[(ctrlY[2])*`WIDTH+(ctrlX[2]+`WIDTH-1)%`WIDTH] <= 1; 
+                                        // boardMemory[(ctrlY[2])*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1; 
                                         next_angle <= `ANGLE0;
                                     end
                                 endcase
