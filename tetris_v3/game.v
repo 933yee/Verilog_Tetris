@@ -22,13 +22,13 @@ module game(
    reg [16:0] pixel_addr;
 
    // board data
-   reg [0:199] boardMemory; // left_up to right_down
+   reg [0:199] boardMemory = 200'b0000010000_0001110000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000; // left_up to right_down
    reg [9:0] ctrlX [3:0]; // coordinate X
    reg [9:0] next_ctrlX [3:0];
    reg [9:0] ctrlY [3:0]; // coordinate Y
    reg [9:0] next_ctrlY [3:0];
-   reg [9:0] a1, a2, a3, a4;
-   reg [9:0] d1, d2, d3, d4;
+   reg [9:0] a1 = 201, a2 = 201, a3 = 201, a4 = 201;
+   reg [9:0] d1 = 201, d2 = 201, d3 = 201, d4 = 201;
    //vga
    reg [3:0] vgaGreen, vgaRed, vgaBlue;
 
@@ -43,6 +43,14 @@ module game(
    wire [9:0] memoryX, memoryY;
    twenty_division td1(.dividend(h_cnt-`LEFT_MOST), .out(memoryX));
    twenty_division td2(.dividend(v_cnt-`UP_MOST), .out(memoryY));
+
+   // clk
+   wire clk_1s;
+   clock_divisor_1s cd1(
+        .clk(clk),
+        .clk_out(clk_1s),
+        .rst(been_ready && key_down[last_change] && last_change == `KEY_CODES_DOWN)
+   );
 
    // check valid movement or not
    wire validLeft, validRight, validDown;
@@ -93,6 +101,31 @@ module game(
         .fullLines(fullLines)
     );
     
+    // shadow generator
+    wire [9:0] shadowX[3:0];
+    wire [9:0] shadowY[3:0];
+    shadow_gen shadow_gen1(
+        .clk(clk), 
+        .ctrlX1(ctrlX[0]), 
+        .ctrlX2(ctrlX[1]), 
+        .ctrlX3(ctrlX[2]), 
+        .ctrlX4(ctrlX[3]), 
+        .ctrlY1(ctrlY[0]), 
+        .ctrlY2(ctrlY[1]), 
+        .ctrlY3(ctrlY[2]), 
+        .ctrlY4(ctrlY[3]),
+        .boardMemory(boardMemory), 
+        .shadowX1(shadowX[0]), 
+        .shadowX2(shadowX[1]), 
+        .shadowX3(shadowX[2]), 
+        .shadowX4(shadowX[3]), 
+        .shadowY1(shadowY[0]), 
+        .shadowY2(shadowY[1]), 
+        .shadowY3(shadowY[2]), 
+        .shadowY4(shadowY[3])
+    );
+
+
 
     always@(*) begin
         current_angle = next_angle;
@@ -105,24 +138,37 @@ module game(
         ctrlY[1] = next_ctrlY[1];
         ctrlY[2] = next_ctrlY[2];
         ctrlY[3] = next_ctrlY[3];
-        boardMemory[d1] = 0;
-        boardMemory[d2] = 0;
-        boardMemory[d3] = 0;
-        boardMemory[d4] = 0;
-        boardMemory[a1] = 1;
-        boardMemory[a2] = 1;
-        boardMemory[a3] = 1;
-        boardMemory[a4] = 1;
    end
 
 
 
    // vga
-   always@(*)begin
+   always@(*) begin
         if(valid) begin
             if(h_cnt > `LEFT_MOST+1 && h_cnt <= `RIGHT_MOST && v_cnt >= `UP_MOST && v_cnt < `DOWN_MOST) begin
                 if(boardMemory[memoryY*`WIDTH+memoryX] == 1'b1) begin
-                    {vgaRed, vgaGreen, vgaBlue} = pixel;
+                    if(v_cnt % 20 == 0 || h_cnt % 20 == 0 || v_cnt % 20 == 19 || h_cnt % 20 == 19) begin
+                        {vgaRed, vgaGreen, vgaBlue} = 12'h000;
+                    end else if (v_cnt % 20 > 3 && v_cnt % 20 < 16 && h_cnt % 20 > 3 && h_cnt % 20 < 16) begin
+                        {vgaRed, vgaGreen, vgaBlue} = 12'h000;
+                    end else if ((h_cnt % 20 == 16 && v_cnt % 20 == 1) || (h_cnt % 20 == 15 && v_cnt % 20 == 2) || (h_cnt % 20 == 14 && v_cnt % 20 == 3) || (h_cnt % 20 == 3 && v_cnt % 20 == 14) || (h_cnt % 20 == 2 && v_cnt % 20 == 15) || (h_cnt % 20 == 1 && v_cnt % 20 == 16)) begin
+                        {vgaRed, vgaGreen, vgaBlue} = 12'hf10;
+                    end else if ((h_cnt % 20 == 17 && v_cnt % 20 == 1) || (h_cnt % 20 == 16 && v_cnt % 20 == 2) || (h_cnt % 20 == 15 && v_cnt % 20 == 3) || (h_cnt % 20 == 3 && v_cnt % 20 == 15) || (h_cnt % 20 == 2 && v_cnt % 20 == 16) || (h_cnt % 20 == 1 && v_cnt % 20 == 17)) begin
+                        {vgaRed, vgaGreen, vgaBlue} = 12'hf20;
+                    end else if ((h_cnt % 20 == 18 && v_cnt % 20 == 1) || (h_cnt % 20 == 17 && v_cnt % 20 == 2) || (h_cnt % 20 == 16 && v_cnt % 20 == 3) || (h_cnt % 20 == 3 && v_cnt % 20 == 16) || (h_cnt % 20 == 2 && v_cnt % 20 == 17) || (h_cnt % 20 == 1 && v_cnt % 20 == 18)) begin
+                        {vgaRed, vgaGreen, vgaBlue} = 12'hf30;
+                    end else if ((h_cnt % 20 == 18 && v_cnt % 20 == 2) || (h_cnt % 20 == 17 && v_cnt % 20 == 3) || (h_cnt % 20 == 16 && v_cnt % 20 == 4) || (h_cnt % 20 == 4 && v_cnt % 20 == 16) || (h_cnt % 20 == 3 && v_cnt % 20 == 17) || (h_cnt % 20 == 2 && v_cnt % 20 == 18)) begin
+                        {vgaRed, vgaGreen, vgaBlue} = 12'hf40;
+                    end else if ((h_cnt % 20 == 18 && v_cnt % 20 == 3) || (h_cnt % 20 == 17 && v_cnt % 20 == 4) || (h_cnt % 20 == 16 && v_cnt % 20 == 5) || (h_cnt % 20 == 5 && v_cnt % 20 == 16) || (h_cnt % 20 == 4 && v_cnt % 20 == 17) || (h_cnt % 20 == 3 && v_cnt % 20 == 18)) begin
+                        {vgaRed, vgaGreen, vgaBlue} = 12'hf50;
+                    end else if ((h_cnt % 20 < 16 && v_cnt % 20 < 4) || (h_cnt % 20 < 4 && v_cnt % 20 < 16)) begin
+                        {vgaRed, vgaGreen, vgaBlue} = 12'hf00;
+                    end else begin
+                        {vgaRed, vgaGreen, vgaBlue} = 12'hf60;
+                    end
+                    // {vgaRed, vgaGreen, vgaBlue} = pixel;
+                end else if(shadowY[0] == memoryY && shadowX[0] == memoryX || shadowY[1] == memoryY && shadowX[1] == memoryX|| shadowY[2] == memoryY && shadowX[2] == memoryX|| shadowY[3] == memoryY && shadowX[3] == memoryX)begin
+                    {vgaRed, vgaGreen, vgaBlue} = 12'h222;
                 end else begin
                     {vgaRed, vgaGreen, vgaBlue} = pixel_back;
                 end
@@ -136,157 +182,8 @@ module game(
 
 
     // update game scene
-   always @ (posedge clk) begin
-       if(start) begin
-            start <= 0;
-            //S_BLOCK
-            // ctrlX[0] <= 4;
-            // ctrlX[1] <= 5;
-            // ctrlX[2] <= 3;
-            // ctrlX[3] <= 4;
-            // ctrlY[0] <= 0;
-            // ctrlY[1] <= 0;
-            // ctrlY[2] <= 1;
-            // ctrlY[3] <= 1;
-            // boardMemory <= 200'b0000110000_0001100000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000;
-            
-            //L_BLOCK
-            next_ctrlX[0] <= 5;
-            next_ctrlX[1] <= 3;
-            next_ctrlX[2] <= 4;
-            next_ctrlX[3] <= 5;
-            next_ctrlY[0] <= 0;
-            next_ctrlY[1] <= 1;
-            next_ctrlY[2] <= 1;
-            next_ctrlY[3] <= 1;
-
-            boardMemory <= 200'b0000010000_0001110000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000;
-            next_block <= `L_BLOCK;
-            next_angle <= `ANGLE0;
-            drop <= 0;
-            d1 <= 201;
-            d2 <= 201;
-            d3 <= 201;
-            d4 <= 201;
-       end 
-       else if(drop) begin
-            d1 <= 201;
-            d2 <= 201;
-            d3 <= 201;
-            d4 <= 201;
-            if(fullLine == 0) begin
-                //create new block
-                drop <= 0;
-                case(current_block)
-                    `O_BLOCK:begin
-                        next_ctrlX[0] <= 5;
-                        next_ctrlX[1] <= 3;
-                        next_ctrlX[2] <= 4;
-                        next_ctrlX[3] <= 5;
-                        next_ctrlY[0] <= 0;
-                        next_ctrlY[1] <= 1;
-                        next_ctrlY[2] <= 1;
-                        next_ctrlY[3] <= 1;
-                        boardMemory[5] <= 1'b1;
-                        boardMemory[`WIDTH + 3] <= 1'b1;
-                        boardMemory[`WIDTH + 4] <= 1'b1;
-                        boardMemory[`WIDTH + 5] <= 1'b1;
-                        next_block <= `L_BLOCK;
-                    end
-                    `L_BLOCK:begin
-                        next_ctrlX[0] <= 3;
-                        next_ctrlX[1] <= 3;
-                        next_ctrlX[2] <= 4;
-                        next_ctrlX[3] <= 5;
-                        next_ctrlY[0] <= 0;
-                        next_ctrlY[1] <= 1;
-                        next_ctrlY[2] <= 1;
-                        next_ctrlY[3] <= 1;
-                        boardMemory[3] <= 1'b1;
-                        boardMemory[`WIDTH + 3] <= 1'b1;
-                        boardMemory[`WIDTH + 4] <= 1'b1;
-                        boardMemory[`WIDTH + 5] <= 1'b1;
-                        next_block <= `J_BLOCK;
-                    end
-                    `J_BLOCK:begin
-                        next_ctrlX[0] <= 4;
-                        next_ctrlX[1] <= 5;
-                        next_ctrlX[2] <= 3;
-                        next_ctrlX[3] <= 4;
-                        next_ctrlY[0] <= 0;
-                        next_ctrlY[1] <= 0;
-                        next_ctrlY[2] <= 1;
-                        next_ctrlY[3] <= 1;
-                        boardMemory[4] <= 1'b1;
-                        boardMemory[`WIDTH + 5] <= 1'b1;
-                        boardMemory[`WIDTH + 3] <= 1'b1;
-                        boardMemory[`WIDTH + 4] <= 1'b1;
-                        next_block <= `S_BLOCK;
-                    end
-                    `S_BLOCK:begin
-                        next_ctrlX[0] <= 3;
-                        next_ctrlX[1] <= 4;
-                        next_ctrlX[2] <= 4;
-                        next_ctrlX[3] <= 5;
-                        next_ctrlY[0] <= 0;
-                        next_ctrlY[1] <= 0;
-                        next_ctrlY[2] <= 1;
-                        next_ctrlY[3] <= 1;
-                        boardMemory[3] <= 1'b1;
-                        boardMemory[4] <= 1'b1;
-                        boardMemory[`WIDTH + 4] <= 1'b1;
-                        boardMemory[`WIDTH + 5] <= 1'b1;
-                        next_block <= `Z_BLOCK;
-                    end
-                    `Z_BLOCK:begin
-                        next_ctrlX[0] <= 3;
-                        next_ctrlX[1] <= 4;
-                        next_ctrlX[2] <= 5;
-                        next_ctrlX[3] <= 6;
-                        next_ctrlY[0] <= 0;
-                        next_ctrlY[1] <= 0;
-                        next_ctrlY[2] <= 0;
-                        next_ctrlY[3] <= 0;
-                        boardMemory[3] <= 1'b1;
-                        boardMemory[4] <= 1'b1;
-                        boardMemory[5] <= 1'b1;
-                        boardMemory[6] <= 1'b1;
-                        next_block <= `I_BLOCK;
-                    end
-                    `I_BLOCK:begin
-                        next_ctrlX[0] <= 4;
-                        next_ctrlX[1] <= 3;
-                        next_ctrlX[2] <= 4;
-                        next_ctrlX[3] <= 5;
-                        next_ctrlY[0] <= 0;
-                        next_ctrlY[1] <= 1;
-                        next_ctrlY[2] <= 1;
-                        next_ctrlY[3] <= 1;
-                        boardMemory[4] <= 1'b1;
-                        boardMemory[`WIDTH + 3] <= 1'b1;
-                        boardMemory[`WIDTH + 4] <= 1'b1;
-                        boardMemory[`WIDTH + 5] <= 1'b1;
-                        next_block <= `T_BLOCK;
-                    end
-                    `T_BLOCK:begin
-                        next_ctrlX[0] <= 4;
-                        next_ctrlX[1] <= 5;
-                        next_ctrlX[2] <= 4;
-                        next_ctrlX[3] <= 5;
-                        next_ctrlY[0] <= 0;
-                        next_ctrlY[1] <= 0;
-                        next_ctrlY[2] <= 1;
-                        next_ctrlY[3] <= 1;
-                        boardMemory[4] <= 1'b1;
-                        boardMemory[5] <= 1'b1;
-                        boardMemory[`WIDTH + 4] <= 1'b1;
-                        boardMemory[`WIDTH + 5] <= 1'b1;
-                        next_block <= `O_BLOCK;
-                    end
-                endcase
-                
-                next_angle <= `ANGLE0;
-            end
+   always@ (posedge clk) begin
+        if(drop) begin
             if(fullLines[19]) begin
                 boardMemory <= {10'b0000000000, boardMemory[0:189]};
             end else if(fullLines[18]) begin
@@ -328,14 +225,263 @@ module game(
             end else if(fullLines[0]) begin
                 boardMemory <= {10'b0000000000, boardMemory[10:199]};
             end
+        end else begin
+            if(d1 != a1 && d1 != a2 && d1 != a3 && d1 != a4 && d1 != 201) boardMemory[d1] <= 0;
+            if(d2 != a1 && d2 != a2 && d2 != a3 && d2 != a4 && d2 != 201) boardMemory[d2] <= 0;
+            if(d3 != a1 && d3 != a2 && d3 != a3 && d3 != a4 && d3 != 201) boardMemory[d3] <= 0;
+            if(d4 != a1 && d4 != a2 && d4 != a3 && d4 != a4 && d4 != 201) boardMemory[d4] <= 0;
+            if(a1 != 201) boardMemory[a1] <= 1;
+            if(a2 != 201) boardMemory[a2] <= 1;
+            if(a3 != 201) boardMemory[a3] <= 1;
+            if(a4 != 201) boardMemory[a4] <= 1;
+        end
+   end
+
+    // calculate next value
+   always @ (posedge clk) begin
+       if(start) begin
+            start <= 0;
+            //S_BLOCK
+            // ctrlX[0] <= 4;
+            // ctrlX[1] <= 5;
+            // ctrlX[2] <= 3;
+            // ctrlX[3] <= 4;
+            // ctrlY[0] <= 0;
+            // ctrlY[1] <= 0;
+            // ctrlY[2] <= 1;
+            // ctrlY[3] <= 1;
+            // boardMemory <= 200'b0000110000_0001100000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000;
+            
+            //L_BLOCK
+            next_ctrlX[0] <= 5;
+            next_ctrlX[1] <= 3;
+            next_ctrlX[2] <= 4;
+            next_ctrlX[3] <= 5;
+            next_ctrlY[0] <= 0;
+            next_ctrlY[1] <= 1;
+            next_ctrlY[2] <= 1;
+            next_ctrlY[3] <= 1;
+
+            // boardMemory <= 200'b0000010000_0001110000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000_0000000000;
+            next_block <= `L_BLOCK;
+            next_angle <= `ANGLE0;
+            drop <= 0;
+            d1 <= 201;
+            d2 <= 201;
+            d3 <= 201;
+            d4 <= 201;
+            a1 <= 201;
+            a2 <= 201;
+            a3 <= 201;
+            a4 <= 201;
+       end else if(clk_1s) begin
+            if(validDown) begin
+                // next position and original position overlap condition
+                if((ctrlY[0]*`WIDTH+ctrlX[0] != (ctrlY[1]+1)*`WIDTH+ctrlX[1]) &&
+                    (ctrlY[0]*`WIDTH+ctrlX[0] != (ctrlY[2]+1)*`WIDTH+ctrlX[2]) &&
+                    (ctrlY[0]*`WIDTH+ctrlX[0] != (ctrlY[3]+1)*`WIDTH+ctrlX[3])) begin
+                    // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0;
+                    d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                end else begin
+                    d1 <= 201;
+                end
+                if((ctrlY[1]*`WIDTH+ctrlX[1] != (ctrlY[0]+1)*`WIDTH+ctrlX[0]) &&
+                    (ctrlY[1]*`WIDTH+ctrlX[1] != (ctrlY[2]+1)*`WIDTH+ctrlX[2]) &&
+                    (ctrlY[1]*`WIDTH+ctrlX[1] != (ctrlY[3]+1)*`WIDTH+ctrlX[3])) begin
+                    // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0;
+                    d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                end else begin
+                    d2 <= 201;
+                end
+                if((ctrlY[2]*`WIDTH+ctrlX[2] != (ctrlY[1]+1)*`WIDTH+ctrlX[1]) &&
+                    (ctrlY[2]*`WIDTH+ctrlX[2] != (ctrlY[0]+1)*`WIDTH+ctrlX[0]) &&
+                    (ctrlY[2]*`WIDTH+ctrlX[2] != (ctrlY[3]+1)*`WIDTH+ctrlX[3])) begin
+                    // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0;
+                    d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                end else begin
+                    d3 <= 201;
+                end
+                if((ctrlY[3]*`WIDTH+ctrlX[3] != (ctrlY[1]+1)*`WIDTH+ctrlX[1]) &&
+                    (ctrlY[3]*`WIDTH+ctrlX[3] != (ctrlY[2]+1)*`WIDTH+ctrlX[2]) &&
+                    (ctrlY[3]*`WIDTH+ctrlX[3] != (ctrlY[0]+1)*`WIDTH+ctrlX[0])) begin
+                    // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0;
+                    d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
+                end else begin
+                    d4 <= 201;
+                end
+                // add next position to boardMemory
+                a1 <= (ctrlY[0]+1)*`WIDTH + ctrlX[0];
+                a2 <= (ctrlY[1]+1)*`WIDTH + ctrlX[1];
+                a3 <= (ctrlY[2]+1)*`WIDTH + ctrlX[2];
+                a4 <= (ctrlY[3]+1)*`WIDTH + ctrlX[3];
+                // boardMemory[(ctrlY[0]+1)*`WIDTH + ctrlX[0]] <= 1'b1;
+                // boardMemory[(ctrlY[1]+1)*`WIDTH + ctrlX[1]] <= 1'b1;
+                // boardMemory[(ctrlY[2]+1)*`WIDTH + ctrlX[2]] <= 1'b1;
+                // boardMemory[(ctrlY[3]+1)*`WIDTH + ctrlX[3]] <= 1'b1;
+                next_ctrlX[0] <= ctrlX[0];
+                next_ctrlX[1] <= ctrlX[1];
+                next_ctrlX[2] <= ctrlX[2];
+                next_ctrlX[3] <= ctrlX[3];
+                next_ctrlY[0] <= ctrlY[0] + 1;
+                next_ctrlY[1] <= ctrlY[1] + 1;
+                next_ctrlY[2] <= ctrlY[2] + 1;
+                next_ctrlY[3] <= ctrlY[3] + 1;
+            end else begin
+                // drop
+                drop <= 1;
+            end
+       end else if(drop) begin
+            d1 <= 201;
+            d2 <= 201;
+            d3 <= 201;
+            d4 <= 201;
+            if(fullLine == 0) begin
+                //create new block
+                drop <= 0;
+                case(current_block)
+                    `O_BLOCK:begin
+                        next_ctrlX[0] <= 5;
+                        next_ctrlX[1] <= 3;
+                        next_ctrlX[2] <= 4;
+                        next_ctrlX[3] <= 5;
+                        next_ctrlY[0] <= 0;
+                        next_ctrlY[1] <= 1;
+                        next_ctrlY[2] <= 1;
+                        next_ctrlY[3] <= 1;
+                        a1 <= 5;
+                        a2 <= `WIDTH + 3;
+                        a3 <= `WIDTH + 4;
+                        a4 <= `WIDTH + 5;
+                        // boardMemory[5] <= 1'b1;
+                        // boardMemory[`WIDTH + 3] <= 1'b1;
+                        // boardMemory[`WIDTH + 4] <= 1'b1;
+                        // boardMemory[`WIDTH + 5] <= 1'b1;
+                        next_block <= `L_BLOCK;
+                    end
+                    `L_BLOCK:begin
+                        next_ctrlX[0] <= 3;
+                        next_ctrlX[1] <= 3;
+                        next_ctrlX[2] <= 4;
+                        next_ctrlX[3] <= 5;
+                        next_ctrlY[0] <= 0;
+                        next_ctrlY[1] <= 1;
+                        next_ctrlY[2] <= 1;
+                        next_ctrlY[3] <= 1;
+                        a1 <= 3;
+                        a2 <= `WIDTH + 3;
+                        a3 <= `WIDTH + 4;
+                        a4 <= `WIDTH + 5;
+                        // boardMemory[3] <= 1'b1;
+                        // boardMemory[`WIDTH + 3] <= 1'b1;
+                        // boardMemory[`WIDTH + 4] <= 1'b1;
+                        // boardMemory[`WIDTH + 5] <= 1'b1;
+                        next_block <= `J_BLOCK;
+                    end
+                    `J_BLOCK:begin
+                        next_ctrlX[0] <= 4;
+                        next_ctrlX[1] <= 5;
+                        next_ctrlX[2] <= 3;
+                        next_ctrlX[3] <= 4;
+                        next_ctrlY[0] <= 0;
+                        next_ctrlY[1] <= 0;
+                        next_ctrlY[2] <= 1;
+                        next_ctrlY[3] <= 1;
+                        a1 <= 4;
+                        a2 <= 5;
+                        a3 <= `WIDTH + 3;
+                        a4 <= `WIDTH + 4;
+                        // boardMemory[4] <= 1'b1;
+                        // boardMemory[`WIDTH + 5] <= 1'b1;
+                        // boardMemory[`WIDTH + 3] <= 1'b1;
+                        // boardMemory[`WIDTH + 4] <= 1'b1;
+                        next_block <= `S_BLOCK;
+                    end
+                    `S_BLOCK:begin
+                        next_ctrlX[0] <= 3;
+                        next_ctrlX[1] <= 4;
+                        next_ctrlX[2] <= 4;
+                        next_ctrlX[3] <= 5;
+                        next_ctrlY[0] <= 0;
+                        next_ctrlY[1] <= 0;
+                        next_ctrlY[2] <= 1;
+                        next_ctrlY[3] <= 1;
+                        a1 <= 3;
+                        a2 <= 4;
+                        a3 <= `WIDTH + 4;
+                        a4 <= `WIDTH + 5;
+                        // boardMemory[3] <= 1'b1;
+                        // boardMemory[4] <= 1'b1;
+                        // boardMemory[`WIDTH + 4] <= 1'b1;
+                        // boardMemory[`WIDTH + 5] <= 1'b1;
+                        next_block <= `Z_BLOCK;
+                    end
+                    `Z_BLOCK:begin
+                        next_ctrlX[0] <= 3;
+                        next_ctrlX[1] <= 4;
+                        next_ctrlX[2] <= 5;
+                        next_ctrlX[3] <= 6;
+                        next_ctrlY[0] <= 0;
+                        next_ctrlY[1] <= 0;
+                        next_ctrlY[2] <= 0;
+                        next_ctrlY[3] <= 0;
+                        a1 <= 3;
+                        a2 <= 4;
+                        a3 <= 5;
+                        a4 <= 6;
+                        // boardMemory[3] <= 1'b1;
+                        // boardMemory[4] <= 1'b1;
+                        // boardMemory[5] <= 1'b1;
+                        // boardMemory[6] <= 1'b1;
+                        next_block <= `I_BLOCK;
+                    end
+                    `I_BLOCK:begin
+                        next_ctrlX[0] <= 4;
+                        next_ctrlX[1] <= 3;
+                        next_ctrlX[2] <= 4;
+                        next_ctrlX[3] <= 5;
+                        next_ctrlY[0] <= 0;
+                        next_ctrlY[1] <= 1;
+                        next_ctrlY[2] <= 1;
+                        next_ctrlY[3] <= 1;
+                        a1 <= 4;
+                        a2 <= `WIDTH + 3;
+                        a3 <= `WIDTH + 4;
+                        a4 <= `WIDTH + 5;
+                        // boardMemory[4] <= 1'b1;
+                        // boardMemory[`WIDTH + 3] <= 1'b1;
+                        // boardMemory[`WIDTH + 4] <= 1'b1;
+                        // boardMemory[`WIDTH + 5] <= 1'b1;
+                        next_block <= `T_BLOCK;
+                    end
+                    `T_BLOCK:begin
+                        next_ctrlX[0] <= 4;
+                        next_ctrlX[1] <= 5;
+                        next_ctrlX[2] <= 4;
+                        next_ctrlX[3] <= 5;
+                        next_ctrlY[0] <= 0;
+                        next_ctrlY[1] <= 0;
+                        next_ctrlY[2] <= 1;
+                        next_ctrlY[3] <= 1;
+                        a1 <= 4;
+                        a2 <= 5;
+                        a3 <= `WIDTH + 4;
+                        a4 <= `WIDTH + 5;
+                        // boardMemory[4] <= 1'b1;
+                        // boardMemory[5] <= 1'b1;
+                        // boardMemory[`WIDTH + 4] <= 1'b1;
+                        // boardMemory[`WIDTH + 5] <= 1'b1;
+                        next_block <= `O_BLOCK;
+                    end
+                endcase
+                
+                next_angle <= `ANGLE0;
+            end
        end else if (been_ready && key_down[last_change] == 1'b1) begin
-            d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
-            d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
-            d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
-            d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
+            
             case (last_change)
                 `KEY_CODES_UP:begin
                     if(validClockwise) begin
+                        
                         case(current_block) 
                             `O_BLOCK: begin
                             end
@@ -357,7 +503,10 @@ module game(
                                         // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[2]-1)*`WIDTH+ctrlX[2];
                                         a2 <= (ctrlY[2]+1)*`WIDTH+ctrlX[2];
                                         a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
@@ -385,7 +534,10 @@ module game(
                                         // //boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= ctrlY[1]*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
                                         a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
                                         a3 <= ctrlY[1]*`WIDTH+(ctrlX[1]+1)%`WIDTH;
@@ -414,7 +566,10 @@ module game(
                                         // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         //boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         //boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[1]-1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
                                         a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
                                         a3 <= (ctrlY[1]-1)*`WIDTH+ctrlX[1];
@@ -443,7 +598,10 @@ module game(
                                         // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH;
                                         a2 <= ctrlY[2]*`WIDTH+(ctrlX[2]-1+`WIDTH)%`WIDTH;
                                         a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
@@ -474,7 +632,10 @@ module game(
                                         // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[2]-1)*`WIDTH+ctrlX[2];
                                         a2 <= (ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH;
                                         a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
@@ -502,7 +663,10 @@ module game(
                                         // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= ctrlY[2]*`WIDTH+(ctrlX[2]-1+`WIDTH)%`WIDTH;
                                         a2 <= ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH;
                                         a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
@@ -531,7 +695,10 @@ module game(
                                         // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[1]-1)*`WIDTH+ctrlX[1];
                                         a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
                                         a3 <= (ctrlY[1]+1)*`WIDTH+ctrlX[1];
@@ -560,7 +727,10 @@ module game(
                                         // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[1]-1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
                                         a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
                                         a3 <= ctrlY[1]*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
@@ -591,7 +761,10 @@ module game(
                                         // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= ctrlY[0]*`WIDTH+ctrlX[0];
                                         a2 <= ctrlY[3]*`WIDTH+(ctrlX[3]+1)%`WIDTH;
                                         a3 <= (ctrlY[3]+1)*`WIDTH+(ctrlX[3]+1)%`WIDTH;
@@ -618,7 +791,10 @@ module game(
                                         // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[1]+1)*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
                                         a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
                                         a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
@@ -646,7 +822,10 @@ module game(
                                         // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= ctrlY[0]*`WIDTH+ctrlX[0];
                                         a2 <= (ctrlY[0]-1)*`WIDTH+(ctrlX[0]+`WIDTH-1)%`WIDTH;
                                         a3 <= ctrlY[0]*`WIDTH+(ctrlX[0]+`WIDTH-1)%`WIDTH;
@@ -674,7 +853,10 @@ module game(
                                         // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[2]-1)*`WIDTH+ctrlX[2];
                                         a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
                                         a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
@@ -704,7 +886,10 @@ module game(
                                         // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[2]-1)*`WIDTH+(ctrlX[2]+1)%`WIDTH;
                                         a2 <= (ctrlY[2]+1)*`WIDTH+ctrlX[2];
                                         a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
@@ -732,7 +917,10 @@ module game(
                                         // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= ctrlY[1]*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
                                         a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
                                         a3 <= (ctrlY[1]+1)*`WIDTH+(ctrlX[1]+1)%`WIDTH;
@@ -761,7 +949,10 @@ module game(
                                         // //boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= ctrlY[0]*`WIDTH+ctrlX[0];
                                         a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
                                         a3 <= (ctrlY[1]-1)*`WIDTH+ctrlX[1];
@@ -790,7 +981,10 @@ module game(
                                         // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[2]-1)*`WIDTH+(ctrlX[2]+`WIDTH-1)%`WIDTH;
                                         a2 <= (ctrlY[2]-1)*`WIDTH+ctrlX[2];
                                         a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
@@ -821,7 +1015,10 @@ module game(
                                         // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[2]-1)*`WIDTH+ctrlX[2];
                                         a2 <= (ctrlY[2]+1)*`WIDTH+ctrlX[2];
                                         a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
@@ -849,7 +1046,10 @@ module game(
                                         // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[2])*`WIDTH+(ctrlX[2]+`WIDTH-2)%`WIDTH;
                                         a2 <= (ctrlY[2])*`WIDTH+(ctrlX[2]+`WIDTH-1)%`WIDTH;
                                         a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
@@ -878,7 +1078,10 @@ module game(
                                         // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[1]-2)*`WIDTH+ctrlX[1];
                                         a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
                                         a3 <= (ctrlY[1]-1)*`WIDTH+ctrlX[1];
@@ -907,7 +1110,10 @@ module game(
                                         // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[1])*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
                                         a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
                                         a3 <= (ctrlY[1])*`WIDTH+(ctrlX[1]+1)%`WIDTH;
@@ -938,7 +1144,10 @@ module game(
                                         // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= ctrlY[0]*`WIDTH+ctrlX[0];
                                         a2 <= (ctrlY[2]+1)*`WIDTH+ctrlX[2];
                                         a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
@@ -966,7 +1175,10 @@ module game(
                                         // // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= (ctrlY[1])*`WIDTH+(ctrlX[1]+`WIDTH-1)%`WIDTH;
                                         a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
                                         a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
@@ -995,7 +1207,10 @@ module game(
                                         // //boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= ctrlY[0]*`WIDTH+ctrlX[0];
                                         a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
                                         a3 <= (ctrlY[1]-1)*`WIDTH+ctrlX[1];
@@ -1024,7 +1239,10 @@ module game(
                                         // //boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0; 
                                         // //boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0; 
                                         // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0; 
-                                        
+                                        d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                                        d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                                        d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                                        d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
                                         a1 <= ctrlY[0]*`WIDTH+ctrlX[0];
                                         a2 <= ctrlY[1]*`WIDTH+ctrlX[1];
                                         a3 <= ctrlY[2]*`WIDTH+ctrlX[2];
@@ -1048,28 +1266,44 @@ module game(
                         if((ctrlY[0]*`WIDTH+ctrlX[0] != (ctrlY[1]+1)*`WIDTH+ctrlX[1]) &&
                            (ctrlY[0]*`WIDTH+ctrlX[0] != (ctrlY[2]+1)*`WIDTH+ctrlX[2]) &&
                            (ctrlY[0]*`WIDTH+ctrlX[0] != (ctrlY[3]+1)*`WIDTH+ctrlX[3])) begin
-                            boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0;
-                        end 
+                            // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0;
+                            d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                        end else begin
+                            d1 <= 201;
+                        end
                         if((ctrlY[1]*`WIDTH+ctrlX[1] != (ctrlY[0]+1)*`WIDTH+ctrlX[0]) &&
                            (ctrlY[1]*`WIDTH+ctrlX[1] != (ctrlY[2]+1)*`WIDTH+ctrlX[2]) &&
                            (ctrlY[1]*`WIDTH+ctrlX[1] != (ctrlY[3]+1)*`WIDTH+ctrlX[3])) begin
-                            boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0;
-                        end 
+                            // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0;
+                            d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                        end else begin
+                            d2 <= 201;
+                        end
                         if((ctrlY[2]*`WIDTH+ctrlX[2] != (ctrlY[1]+1)*`WIDTH+ctrlX[1]) &&
                            (ctrlY[2]*`WIDTH+ctrlX[2] != (ctrlY[0]+1)*`WIDTH+ctrlX[0]) &&
                            (ctrlY[2]*`WIDTH+ctrlX[2] != (ctrlY[3]+1)*`WIDTH+ctrlX[3])) begin
-                            boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0;
-                        end 
+                            // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0;
+                            d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                        end else begin
+                            d3 <= 201;
+                        end
                         if((ctrlY[3]*`WIDTH+ctrlX[3] != (ctrlY[1]+1)*`WIDTH+ctrlX[1]) &&
                            (ctrlY[3]*`WIDTH+ctrlX[3] != (ctrlY[2]+1)*`WIDTH+ctrlX[2]) &&
                            (ctrlY[3]*`WIDTH+ctrlX[3] != (ctrlY[0]+1)*`WIDTH+ctrlX[0])) begin
-                            boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0;
-                        end 
+                            // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0;
+                            d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
+                        end else begin
+                            d4 <= 201;
+                        end
                         // add next position to boardMemory
-                        boardMemory[(ctrlY[0]+1)*`WIDTH + ctrlX[0]] <= 1'b1;
-                        boardMemory[(ctrlY[1]+1)*`WIDTH + ctrlX[1]] <= 1'b1;
-                        boardMemory[(ctrlY[2]+1)*`WIDTH + ctrlX[2]] <= 1'b1;
-                        boardMemory[(ctrlY[3]+1)*`WIDTH + ctrlX[3]] <= 1'b1;
+                        a1 <= (ctrlY[0]+1)*`WIDTH + ctrlX[0];
+                        a2 <= (ctrlY[1]+1)*`WIDTH + ctrlX[1];
+                        a3 <= (ctrlY[2]+1)*`WIDTH + ctrlX[2];
+                        a4 <= (ctrlY[3]+1)*`WIDTH + ctrlX[3];
+                        // boardMemory[(ctrlY[0]+1)*`WIDTH + ctrlX[0]] <= 1'b1;
+                        // boardMemory[(ctrlY[1]+1)*`WIDTH + ctrlX[1]] <= 1'b1;
+                        // boardMemory[(ctrlY[2]+1)*`WIDTH + ctrlX[2]] <= 1'b1;
+                        // boardMemory[(ctrlY[3]+1)*`WIDTH + ctrlX[3]] <= 1'b1;
                         next_ctrlX[0] <= ctrlX[0];
                         next_ctrlX[1] <= ctrlX[1];
                         next_ctrlX[2] <= ctrlX[2];
@@ -1089,33 +1323,49 @@ module game(
                         if((ctrlY[0]*`WIDTH+ctrlX[0] != ctrlY[1]*`WIDTH+(ctrlX[1]-1+`WIDTH)%`WIDTH) &&
                            (ctrlY[0]*`WIDTH+ctrlX[0] != ctrlY[2]*`WIDTH+(ctrlX[2]-1+`WIDTH)%`WIDTH) &&
                            (ctrlY[0]*`WIDTH+ctrlX[0] != ctrlY[3]*`WIDTH+(ctrlX[3]-1+`WIDTH)%`WIDTH)) begin
-                            boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0;
-                        end 
+                            // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0;
+                            d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                        end else begin
+                            d1 <= 201;
+                        end
                         if((ctrlY[1]*`WIDTH+ctrlX[1] != ctrlY[0]*`WIDTH+(ctrlX[0]-1+`WIDTH)%`WIDTH) &&
                            (ctrlY[1]*`WIDTH+ctrlX[1] != ctrlY[2]*`WIDTH+(ctrlX[2]-1+`WIDTH)%`WIDTH) &&
                            (ctrlY[1]*`WIDTH+ctrlX[1] != ctrlY[3]*`WIDTH+(ctrlX[3]-1+`WIDTH)%`WIDTH)) begin
-                            boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0;
-                        end 
+                            // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0;
+                            d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                        end else begin
+                            d2 <= 201;
+                        end
                         if((ctrlY[2]*`WIDTH+ctrlX[2] != ctrlY[1]*`WIDTH+(ctrlX[1]-1+`WIDTH)%`WIDTH) &&
                            (ctrlY[2]*`WIDTH+ctrlX[2] != ctrlY[0]*`WIDTH+(ctrlX[0]-1+`WIDTH)%`WIDTH) &&
                            (ctrlY[2]*`WIDTH+ctrlX[2] != ctrlY[3]*`WIDTH+(ctrlX[3]-1+`WIDTH)%`WIDTH)) begin
-                            boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0;
-                        end 
+                            // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0;
+                            d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                        end else begin
+                            d3 <= 201;
+                        end
                         if((ctrlY[3]*`WIDTH+ctrlX[3] != ctrlY[1]*`WIDTH+(ctrlX[1]-1+`WIDTH)%`WIDTH) &&
                            (ctrlY[3]*`WIDTH+ctrlX[3] != ctrlY[2]*`WIDTH+(ctrlX[2]-1+`WIDTH)%`WIDTH) &&
                            (ctrlY[3]*`WIDTH+ctrlX[3] != ctrlY[0]*`WIDTH+(ctrlX[0]-1+`WIDTH)%`WIDTH)) begin
-                            boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0;
-                        end 
+                            // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0;
+                            d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
+                        end else begin
+                            d4 <= 201;
+                        end
 
                         // add next position to boardMemory
                         next_ctrlX[0] <= (ctrlX[0]-1+`WIDTH)%`WIDTH;
-                        boardMemory[ctrlY[0]*`WIDTH+(ctrlX[0]-1+`WIDTH)%`WIDTH] <= 1;
+                        // boardMemory[ctrlY[0]*`WIDTH+(ctrlX[0]-1+`WIDTH)%`WIDTH] <= 1;
+                        a1 <= ctrlY[0]*`WIDTH+(ctrlX[0]-1+`WIDTH)%`WIDTH;
                         next_ctrlX[1] <= (ctrlX[1]-1+`WIDTH)%`WIDTH;
-                        boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]-1+`WIDTH)%`WIDTH] <= 1;
+                        // boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]-1+`WIDTH)%`WIDTH] <= 1;
+                        a2 <= ctrlY[1]*`WIDTH+(ctrlX[1]-1+`WIDTH)%`WIDTH;
                         next_ctrlX[2] <= (ctrlX[2]-1+`WIDTH)%`WIDTH;
-                        boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]-1+`WIDTH)%`WIDTH] <= 1;
+                        // boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]-1+`WIDTH)%`WIDTH] <= 1;
+                        a3 <= ctrlY[2]*`WIDTH+(ctrlX[2]-1+`WIDTH)%`WIDTH;
                         next_ctrlX[3] <= (ctrlX[3]-1+`WIDTH)%`WIDTH;
-                        boardMemory[ctrlY[3]*`WIDTH+(ctrlX[3]-1+`WIDTH)%`WIDTH] <= 1;
+                        // boardMemory[ctrlY[3]*`WIDTH+(ctrlX[3]-1+`WIDTH)%`WIDTH] <= 1;
+                        a4 <= ctrlY[3]*`WIDTH+(ctrlX[3]-1+`WIDTH)%`WIDTH;
 
                         next_ctrlY[0] <= ctrlY[0];
                         next_ctrlY[1] <= ctrlY[1];
@@ -1129,33 +1379,49 @@ module game(
                         if((ctrlY[0]*`WIDTH+ctrlX[0] != ctrlY[1]*`WIDTH+(ctrlX[1]+1)%`WIDTH) &&
                            (ctrlY[0]*`WIDTH+ctrlX[0] != ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH) &&
                            (ctrlY[0]*`WIDTH+ctrlX[0] != ctrlY[3]*`WIDTH+(ctrlX[3]+1)%`WIDTH)) begin
-                            boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0;
-                        end 
+                            // boardMemory[ctrlY[0]*`WIDTH+ctrlX[0]] <= 0;
+                            d1 <= ctrlY[0]*`WIDTH+ctrlX[0];
+                        end else begin
+                            d1 <= 201;
+                        end
                         if((ctrlY[1]*`WIDTH+ctrlX[1] != ctrlY[0]*`WIDTH+(ctrlX[0]+1)%`WIDTH) &&
                            (ctrlY[1]*`WIDTH+ctrlX[1] != ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH) &&
                            (ctrlY[1]*`WIDTH+ctrlX[1] != ctrlY[3]*`WIDTH+(ctrlX[3]+1)%`WIDTH)) begin
-                            boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0;
-                        end 
+                            // boardMemory[ctrlY[1]*`WIDTH+ctrlX[1]] <= 0;
+                            d2 <= ctrlY[1]*`WIDTH+ctrlX[1];
+                        end else begin
+                            d2 <= 201;
+                        end
                         if((ctrlY[2]*`WIDTH+ctrlX[2] != ctrlY[1]*`WIDTH+(ctrlX[1]+1)%`WIDTH) &&
                            (ctrlY[2]*`WIDTH+ctrlX[2] != ctrlY[0]*`WIDTH+(ctrlX[0]+1)%`WIDTH) &&
                            (ctrlY[2]*`WIDTH+ctrlX[2] != ctrlY[3]*`WIDTH+(ctrlX[3]+1)%`WIDTH)) begin
-                            boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0;
-                        end 
+                            // boardMemory[ctrlY[2]*`WIDTH+ctrlX[2]] <= 0;
+                            d3 <= ctrlY[2]*`WIDTH+ctrlX[2];
+                        end else begin
+                            d3 <= 201;
+                        end
                         if((ctrlY[3]*`WIDTH+ctrlX[3] != ctrlY[1]*`WIDTH+(ctrlX[1]+1)%`WIDTH) &&
                            (ctrlY[3]*`WIDTH+ctrlX[3] != ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH) &&
                            (ctrlY[3]*`WIDTH+ctrlX[3] != ctrlY[0]*`WIDTH+(ctrlX[0]+1)%`WIDTH)) begin
-                            boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0;
-                        end 
+                            // boardMemory[ctrlY[3]*`WIDTH+ctrlX[3]] <= 0;
+                            d4 <= ctrlY[3]*`WIDTH+ctrlX[3];
+                        end else begin
+                            d4 <= 201;
+                        end
                         
                         // add next position to board memory
                         next_ctrlX[0] <= (ctrlX[0]+1)%`WIDTH;
-                        boardMemory[ctrlY[0]*`WIDTH+(ctrlX[0]+1)%`WIDTH] <= 1;
+                        // boardMemory[ctrlY[0]*`WIDTH+(ctrlX[0]+1)%`WIDTH] <= 1;
+                        a1 <= ctrlY[0]*`WIDTH+(ctrlX[0]+1)%`WIDTH;
                         next_ctrlX[1] <= (ctrlX[1]+1)%`WIDTH;
-                        boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]+1)%`WIDTH] <= 1;
+                        // boardMemory[ctrlY[1]*`WIDTH+(ctrlX[1]+1)%`WIDTH] <= 1;
+                        a2 <= ctrlY[1]*`WIDTH+(ctrlX[1]+1)%`WIDTH;
                         next_ctrlX[2] <= (ctrlX[2]+1)%`WIDTH;
-                        boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1;
+                        // boardMemory[ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH] <= 1;
+                        a3 <= ctrlY[2]*`WIDTH+(ctrlX[2]+1)%`WIDTH;
                         next_ctrlX[3] <= (ctrlX[3]+1)%`WIDTH;
-                        boardMemory[ctrlY[3]*`WIDTH+(ctrlX[3]+1)%`WIDTH] <= 1;
+                        // boardMemory[ctrlY[3]*`WIDTH+(ctrlX[3]+1)%`WIDTH] <= 1;
+                        a4 <= ctrlY[3]*`WIDTH+(ctrlX[3]+1)%`WIDTH;
                         
                         next_ctrlY[0] <= ctrlY[0];
                         next_ctrlY[1] <= ctrlY[1];
@@ -1164,14 +1430,25 @@ module game(
                     end
                 end 
                 default: begin
-                    
+                    a1 <= a1;
+                    a2 <= a2;
+                    a3 <= a3;
+                    a4 <= a4;
+                    d1 <= d1;
+                    d2 <= d2;
+                    d3 <= d3;
+                    d4 <= d4;
                 end
             endcase
        end else begin
-            d1 <= 201;
-            d2 <= 201;
-            d3 <= 201;
-            d4 <= 201;
+            a1 <= a1;
+            a2 <= a2;
+            a3 <= a3;
+            a4 <= a4;
+            d1 <= d1;
+            d2 <= d2;
+            d3 <= d3;
+            d4 <= d4;
        end
    end
     
