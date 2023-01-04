@@ -10,7 +10,8 @@
     - Add block collider.
     - Add check and delete lines.
 
-### tetris_v2
+### tetris_v2, tetris_v3
     - Add block passing through the wall.
     - Add block rotation.
     - LUTs over-utilized (23729/20800).
+
