@@ -1,4 +1,4 @@
-# FinalProject_logic_design_laboratory
+# FinalProject logic-design-laboratory
 
 ---
 
